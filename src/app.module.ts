@@ -18,6 +18,7 @@ import * as redisStore from 'cache-manager-ioredis';
         store: redisStore,
         host: configService.get('REDIS_HOST'),
         port: configService.get('REDIS_PORT'),
+        tls: {},
         ttl: configService.get('CACHE_TTL'),
       }),
       inject: [ConfigService],
