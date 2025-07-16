@@ -6,6 +6,7 @@ import {
   ManyToMany,
   JoinTable,
 } from 'typeorm';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 @Unique(['email'])
@@ -20,6 +21,7 @@ export class User {
   email: string;
 
   @Column()
+  @Exclude()
   password: string;
 
   @ManyToMany(() => User, (user) => user.following)
