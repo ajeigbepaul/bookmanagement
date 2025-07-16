@@ -21,78 +21,293 @@
   <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+# Book Management API
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+A NestJS RESTful API for managing books, users, comments, and user relationships (follow/unfollow), with JWT authentication, PostgreSQL, Redis caching, and Swagger documentation.
 
-## Project setup
+---
 
-```bash
-$ npm install
-```
+## Features
 
-## Compile and run the project
+- User registration and login (JWT authentication)
+- CRUD for books
+- Comment on books
+- Follow/unfollow users
+- Pagination for books and comments
+- Redis caching for book data
+- API documentation with Swagger
 
-```bash
-# development
-$ npm run start
+---
 
-# watch mode
-$ npm run start:dev
+## Prerequisites
 
-# production mode
-$ npm run start:prod
-```
+- [Node.js](https://nodejs.org/) (v16+ recommended)
+- [Docker](https://www.docker.com/) (for PostgreSQL and Redis)
+- [npm](https://www.npmjs.com/)
 
-## Run tests
+---
 
-```bash
-# unit tests
-$ npm run test
+## Setup Instructions
 
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### 1. **Clone the Repository**
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+ git clone <your-repo-url>
+ cd bookmanagement
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### 2. **Install Dependencies**
 
-## Resources
+```bash
+npm install
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+### 3. **Configure Environment Variables**
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+Create a `.env` file in the root:
 
-## Support
+```
+DB_HOST=
+DB_PORT=
+DB_USERNAME=
+DB_PASSWORD=
+DB_NAME=
+JWT_SECRET=
+JWT_EXPIRES_IN=
+REDIS_HOST=
+REDIS_PORT=
+CACHE_TTL=
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### 4. **Start PostgreSQL and Redis with Docker**
 
-## Stay in touch
+```bash
+docker-compose up -d
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### 5. **Run the Application**
 
-## License
+```bash
+npm run start:dev
+```
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+The API will be available at `http://localhost:3333`.
+
+### 6. **Access Swagger API Docs**
+
+Visit: [http://localhost:3333/api](http://localhost:3333/api)
+
+---
+
+## API Endpoints
+
+### **Authentication**
+
+- `POST /auth/register` — Register a new user
+- `POST /auth/login` — Login and receive JWT
+
+### **Books**
+
+- `GET /books` — List books (paginated)
+- `GET /books/:id` — Get book by ID
+- `POST /books` — Create book (JWT required)
+- `PUT /books/:id` — Update book (JWT required)
+- `DELETE /books/:id` — Delete book (JWT required)
+
+### **Comments**
+
+- `GET /books/:id/comments` — List comments for a book (paginated)
+- `POST /books/:id/comments` — Add comment (JWT required)
+- `DELETE /comments/:id` — Delete comment (JWT required)
+
+### **Users**
+
+- `GET /users/me` — Get current user profile (JWT required)
+- `POST /users/:id/follow` — Follow a user (JWT required)
+- `DELETE /users/:id/follow` — Unfollow a user (JWT required)
+- `GET /users/:id/followers` — List followers
+- `GET /users/:id/following` — List following
+
+---
+
+## **Authentication**
+
+- All protected endpoints require an `Authorization: Bearer <token>` header.
+- Obtain the token via `/auth/login`.
+
+---
+
+## **Pagination**
+
+- For book and comment lists, use `?page=1&limit=10` query params.
+
+---
+
+## **Caching**
+
+- Book list and book details are cached in Redis for 60 seconds.
+- Cache is invalidated on book create, update, or delete.
+
+---
+
+## **Swagger API Documentation**
+
+- Visit [http://localhost:3333/api](http://localhost:3333/api) for interactive API docs.
+- All endpoints, request/response schemas, and authentication are documented.
+
+---
+
+## **Testing**
+
+- You can use Postman, Insomnia, or Swagger UI to test all endpoints.
+
+---
+
+## **Code Comments & In-Code Documentation**
+
+- The codebase includes comments explaining key logic, especially in services and controllers.
+- DTOs and entities are annotated for Swagger and validation.
+- For further details, see the Swagger UI or the code itself.
+
+---
+
+## **Contribution Guidelines**
+
+We welcome contributions! To contribute:
+
+1. Fork the repository and create your branch from `main`.
+2. Write clear, well-commented code and add/modify tests as needed.
+3. Ensure all tests pass (`npm run test` and `npm run test:e2e`).
+4. Document any new endpoints or features in the README and Swagger.
+5. Submit a pull request with a clear description of your changes.
+
+---
+
+## **Example Requests & Responses**
+
+### Register a User
+
+**Request:**
+
+```json
+POST /auth/register
+{
+  "username": "alice",
+  "email": "alice@example.com",
+  "password": "password123"
+}
+```
+
+**Response:**
+
+```json
+{
+  "id": 1,
+  "username": "alice",
+  "email": "alice@example.com"
+}
+```
+
+### Login
+
+**Request:**
+
+```json
+POST /auth/login
+{
+  "usernameOrEmail": "alice@example.com",
+  "password": "password123"
+}
+```
+
+**Response:**
+
+```json
+{
+  "access_token": "<jwt-token>",
+  "user": {
+    "id": 1,
+    "username": "alice",
+    "email": "alice@example.com"
+  }
+}
+```
+
+### Get Books (Paginated)
+
+**Request:**
+
+```
+GET /books?page=1&limit=2
+```
+
+**Response:**
+
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "title": "My Book Title",
+      "author": "Author Name",
+      "description": "A description",
+      "createdBy": {
+        "id": 1,
+        "username": "alice",
+        "email": "alice@example.com"
+      },
+      "createdAt": "2025-07-16T07:03:48.334Z",
+      "updatedAt": "2025-07-16T07:03:48.334Z"
+    }
+  ],
+  "total": 1,
+  "page": 1,
+  "limit": 2
+}
+```
+
+### Add a Comment
+
+**Request:**
+
+```json
+POST /books/1/comments
+{
+  "content": "Great book!"
+}
+```
+
+**Response:**
+
+```json
+{
+  "id": 1,
+  "content": "Great book!",
+  "book": { ... },
+  "user": { ... },
+  "createdAt": "2025-07-16T07:03:48.334Z"
+}
+```
+
+### Follow a User
+
+**Request:**
+
+```
+POST /users/2/follow
+Authorization: Bearer <token>
+```
+
+**Response:**
+
+```json
+{
+  "message": "Followed successfully"
+}
+```
+
+---
+
+## **License**
+
+MIT
