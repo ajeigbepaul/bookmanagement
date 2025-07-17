@@ -7,7 +7,12 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
-
+  
+  app.enableCors({
+    origin:['http://localhost:3000','http://localhost:3001'],
+    methods:['GET','POST','PUT','DELETE'],
+    credentials:true,
+  })
   // Swagger setup
   const config = new DocumentBuilder()
     .setTitle('Book Management API')
