@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { User } from '../users/user.entity';
 
 @Entity()
@@ -15,6 +22,9 @@ export class Book {
   @Column({ nullable: true })
   description: string;
 
+  @Column({ default: 'fiction' })
+  genre: string;
+
   @ManyToOne(() => User, { eager: true })
   createdBy: User;
 
@@ -23,4 +33,4 @@ export class Book {
 
   @UpdateDateColumn()
   updatedAt: Date;
-} 
+}

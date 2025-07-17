@@ -10,6 +10,10 @@ export class CreateBookDto {
   @IsString()
   author: string;
 
+  @ApiProperty({ example: 'fiction', description: 'Book genre' })
+  @IsString()
+  genre: string;
+
   @ApiProperty({ example: 'A description', required: false })
   @IsOptional()
   @IsString()

@@ -48,12 +48,24 @@ export class BooksController {
     example: 10,
     description: 'Items per page',
   })
+  @ApiQuery({
+    name: 'search',
+    required: false,
+    description: 'Search by title or author',
+  })
+  @ApiQuery({
+    name: 'genre',
+    required: false,
+    description: 'Filter by genre',
+  })
   @Get()
   findAll(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    @Query('search') search?: string,
+    @Query('genre') genre?: string,
   ) {
-    return this.booksService.findAll({ page, limit });
+    return this.booksService.findAll({ page, limit, search, genre });
   }
 
   @ApiOperation({ summary: 'Get a book by ID' })

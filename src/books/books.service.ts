@@ -21,17 +21,50 @@ export class BooksService {
     private cacheManager: Cache,
   ) {}
 
-  async findAll({ page, limit }: { page: number; limit: number }) {
-    const cacheKey = `books:page:${page}:limit:${limit}`;
+  async findAll({
+    page,
+    limit,
+    search,
+    genre,
+  }: {
+    page: number;
+    limit: number;
+    search?: string;
+    genre?: string;
+  }) {
+    const cacheKey = `books:page:${page}:limit:${limit}:search:${search || ''}:genre:${genre || ''}`;
     const cached = await this.cacheManager.get(cacheKey);
     if (cached) return cached;
 
-    const [data, total] = await this.booksRepository.findAndCount({
-      skip: (page - 1) * limit,
-      take: limit,
-      order: { createdAt: 'DESC' },
-      relations: ['createdBy'],
-    });
+    // Build dynamic where clause
+    const where: any = {};
+    if (search) {
+      where['title'] = () => `LOWER(title) LIKE '%${search.toLowerCase()}%'`;
+      where['author'] = () => `LOWER(author) LIKE '%${search.toLowerCase()}%'`;
+    }
+    if (genre) {
+      where['genre'] = genre;
+    }
+
+    // Use QueryBuilder for flexible search (title or author)
+    const qb = this.booksRepository
+      .createQueryBuilder('book')
+      .leftJoinAndSelect('book.createdBy', 'createdBy')
+      .orderBy('book.createdAt', 'DESC')
+      .skip((page - 1) * limit)
+      .take(limit);
+
+    if (search) {
+      qb.andWhere(
+        '(LOWER(book.title) LIKE :search OR LOWER(book.author) LIKE :search)',
+        { search: `%${search.toLowerCase()}%` },
+      );
+    }
+    if (genre) {
+      qb.andWhere('book.genre = :genre', { genre });
+    }
+
+    const [data, total] = await qb.getManyAndCount();
 
     // For each book, get commentsCount, followersCount, followingCount
     const booksWithCounts = await Promise.all(
