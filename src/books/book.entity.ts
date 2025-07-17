@@ -5,8 +5,10 @@ import {
   ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
 import { User } from '../users/user.entity';
+import { Review } from '../reviews/review.entity';
 
 @Entity()
 export class Book {
@@ -22,11 +24,17 @@ export class Book {
   @Column({ nullable: true })
   description: string;
 
+  @Column({ nullable: true })
+  coverImageUrl: string;
+
   @Column({ default: 'fiction' })
   genre: string;
 
   @ManyToOne(() => User, { eager: true })
   createdBy: User;
+
+  @OneToMany(() => Review, (review) => review.book)
+  reviews: Review[];
 
   @CreateDateColumn()
   createdAt: Date;

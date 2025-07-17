@@ -5,6 +5,7 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { BooksModule } from './books/books.module';
 import { CommentsModule } from './comments/comments.module';
+import { ReviewsModule } from './reviews/reviews.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import * as redisStore from 'cache-manager-ioredis';
 
@@ -28,6 +29,7 @@ import * as redisStore from 'cache-manager-ioredis';
     UsersModule,
     BooksModule,
     CommentsModule,
+    ReviewsModule,
   ],
 })
 export class AppModule {}
