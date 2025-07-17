@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  CreateDateColumn,
+} from 'typeorm';
 import { Book } from '../books/book.entity';
 import { User } from '../users/user.entity';
 
@@ -10,7 +16,7 @@ export class Comment {
   @Column()
   content: string;
 
-  @ManyToOne(() => Book, { eager: true })
+  @ManyToOne(() => Book, { eager: true, onDelete: 'CASCADE' })
   book: Book;
 
   @ManyToOne(() => User, { eager: true })
@@ -18,4 +24,4 @@ export class Comment {
 
   @CreateDateColumn()
   createdAt: Date;
-} 
+}

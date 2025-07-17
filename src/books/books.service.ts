@@ -101,6 +101,8 @@ export class BooksService {
   }
 
   async remove(id: number): Promise<void> {
+    // Delete all comments for this book first (in case cascade is not yet active)
+    await this.commentsRepository.delete({ book: { id } });
     await this.booksRepository.delete(id);
     if (typeof (this.cacheManager as any).reset === 'function') {
       await (this.cacheManager as any).reset();
