@@ -5,12 +5,18 @@ import { Repository } from 'typeorm';
 import { Book } from './book.entity';
 import { instanceToPlain } from 'class-transformer';
 import { Cache } from 'cache-manager';
+import { Comment } from '../comments/comment.entity';
+import { User } from '../users/user.entity';
 
 @Injectable()
 export class BooksService {
   constructor(
     @InjectRepository(Book)
     private booksRepository: Repository<Book>,
+    @InjectRepository(Comment)
+    private commentsRepository: Repository<Comment>,
+    @InjectRepository(User)
+    private usersRepository: Repository<User>,
     @Inject(CACHE_MANAGER)
     private cacheManager: Cache,
   ) {}
@@ -23,9 +29,37 @@ export class BooksService {
     const [data, total] = await this.booksRepository.findAndCount({
       skip: (page - 1) * limit,
       take: limit,
+      order: { createdAt: 'DESC' },
+      relations: ['createdBy'],
     });
+
+    // For each book, get commentsCount, followersCount, followingCount
+    const booksWithCounts = await Promise.all(
+      data.map(async (book) => {
+        const commentsCount = await this.commentsRepository.count({
+          where: { book: { id: book.id } },
+        });
+        let followersCount = 0;
+        let followingCount = 0;
+        if (book.createdBy?.id) {
+          const author = await this.usersRepository.findOne({
+            where: { id: book.createdBy.id },
+            relations: ['followers', 'following'],
+          });
+          followersCount = author?.followers?.length || 0;
+          followingCount = author?.following?.length || 0;
+        }
+        return {
+          ...instanceToPlain(book),
+          commentsCount,
+          followersCount,
+          followingCount,
+        };
+      }),
+    );
+
     const result = {
-      data: data.map((book) => instanceToPlain(book)),
+      data: booksWithCounts,
       total,
       page,
       limit,
