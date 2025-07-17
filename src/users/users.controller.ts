@@ -36,7 +36,9 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Get('me')
   getProfile(@Req() req: AuthenticatedRequest) {
-    return req.user;
+    // Return id, username, and email
+    const { userId, username, email } = req.user;
+    return { id: userId, username, email };
   }
 
   @ApiBearerAuth()
